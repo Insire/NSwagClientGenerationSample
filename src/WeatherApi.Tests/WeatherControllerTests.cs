@@ -3,12 +3,12 @@ using WeatherApi.Client;
 
 namespace WeatherApi.Tests
 {
-    public class WeatherControllerTests : IClassFixture<WebApplicationFactory<WeatherForecast>>
+    public class WeatherControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly WebApplicationFactory<WeatherForecast> _factory;
+        private readonly WebApplicationFactory<Program> _factory;
         private readonly WeatherClient _client;
 
-        public WeatherControllerTests(WebApplicationFactory<WeatherForecast> factory)
+        public WeatherControllerTests(WebApplicationFactory<Program> factory)
         {
             _factory = factory;
 
@@ -24,7 +24,7 @@ namespace WeatherApi.Tests
 
             // Assert
             Assert.True(response is not null);
-            Assert.True(response.Result.Count > 0);
+            Assert.True(response.Count > 0);
         }
 
         [Theory]
@@ -40,10 +40,9 @@ namespace WeatherApi.Tests
 
             // Assert
             Assert.True(response is not null);
-            Assert.True(response.Result is not null);
-            Assert.True(response.Result.Date is not null);
-            Assert.True(response.Result.TemperatureF is not null);
-            Assert.True(response.Result.Summary is not null);
+            Assert.True(response.Date is not null);
+            Assert.True(response.TemperatureF is not null);
+            Assert.True(response.Summary is not null);
         }
     }
 }

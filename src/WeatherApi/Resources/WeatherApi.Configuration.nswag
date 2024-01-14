@@ -65,7 +65,7 @@
       "parameterDictionaryType": "System.Collections.Generic.IDictionary",
       "responseArrayType": "System.Collections.Generic.IReadOnlyList",
       "responseDictionaryType": "System.Collections.Generic.IReadOnlyDictionary",
-      "wrapResponses": true,
+      "wrapResponses": false,
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",

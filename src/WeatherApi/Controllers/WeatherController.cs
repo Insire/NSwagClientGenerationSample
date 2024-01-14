@@ -5,8 +5,6 @@ namespace WeatherApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[OpenApiTag("Weather")]
-[ApiExplorerSettings(GroupName = "Weather")]
 public class WeatherController : ControllerBase
 {
     private static readonly string[] Summaries = new[]

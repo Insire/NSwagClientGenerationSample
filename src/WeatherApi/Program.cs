@@ -1,6 +1,6 @@
 namespace WeatherApi;
 
-public class Porgram
+public partial class Program
 {
     public static void Main(string[] args)
     {
