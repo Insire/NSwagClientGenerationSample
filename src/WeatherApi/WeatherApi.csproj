@@ -17,10 +17,14 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<Target Name="NSwag" AfterTargets="AfterRebuild">
-		<Copy SourceFiles="@(ReferencePath)" DestinationFolder="$(OutDir)References" />
-		<Exec Command="$(NSwagExe_Net80) run Resources\WeatherApi.Configuration.nswag" />
-		<RemoveDir Directories="$(OutDir)References" />
+	<Target Name="NSwag" AfterTargets="AfterRebuild" Condition=" '$(Configuration)' == 'Debug' ">
+		<Exec ConsoleToMSBuild="true" ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net80) run Resources\WeatherApi.Configuration.nswag /variables:nobuild=true,Configuration=$(Configuration)">
+			<Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
+			<Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
+		</Exec>
+
+		<Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
+		<Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
 	</Target>
 
 	<ItemGroup>
