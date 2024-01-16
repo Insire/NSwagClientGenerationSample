@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Rascal" Version="1.1.0" />
 		<!--nswag-->
 		<PackageReference Include="NSwag.AspNetCore" Version="14.0.1" />
 		<PackageReference Include="NSwag.CodeGeneration" Version="14.0.1" />
