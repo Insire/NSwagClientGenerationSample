@@ -28,23 +28,23 @@ namespace WeatherApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<WeatherForecast>> GetWeatherForecastAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<WeatherDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<WeatherForecast> GetWeatherForecastByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<WeatherDto> PutAsync(WeatherDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteWeatherForecastAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<WeatherDto> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutWeatherForecastAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostWeatherForecastAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<WeatherDto> PostAsync(int id, WeatherDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -74,7 +74,7 @@ namespace WeatherApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<WeatherForecast>> GetWeatherForecastAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<WeatherDto>> GetAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
 
@@ -104,12 +104,32 @@ namespace WeatherApi.Client
             var status_ = (int)response_.StatusCode;
             if (status_ == 200)
             {
-                var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.IReadOnlyList<WeatherForecast>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.IReadOnlyList<WeatherDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                 if (objectResponse_.Object == null)
                 {
                     throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                 }
                 return objectResponse_.Object;
+            }
+            else
+            if (status_ == 400)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+            }
+            else
+            if (status_ == 404)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
             }
             else
             {
@@ -120,7 +140,80 @@ namespace WeatherApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<WeatherForecast> GetWeatherForecastByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<WeatherDto> PutAsync(WeatherDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (dto == null)
+                throw new System.ArgumentNullException("dto");
+
+            var client_ = _httpClient;
+
+            using var request_ = new System.Net.Http.HttpRequestMessage();
+
+                var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(dto, _settings.Value);
+                var content_ = new System.Net.Http.ByteArrayContent(json_);
+                content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                request_.Content = content_;
+            request_.Method = new System.Net.Http.HttpMethod("PUT");
+            request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            // Operation Path: "Weather"
+            urlBuilder_.Append("Weather");
+
+            var url_ = urlBuilder_.ToString();
+            request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+            using var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+
+            var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+            foreach (var item_ in response_.Headers)
+                headers_[item_.Key] = item_.Value;
+            if (response_.Content != null && response_.Content.Headers != null)
+            {
+                foreach (var item_ in response_.Content.Headers)
+                    headers_[item_.Key] = item_.Value;
+            }
+
+            var status_ = (int)response_.StatusCode;
+            if (status_ == 200)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<WeatherDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                return objectResponse_.Object;
+            }
+            else
+            if (status_ == 400)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+            }
+            else
+            if (status_ == 404)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+            }
+            else
+            {
+                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<WeatherDto> GetByIdAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -154,12 +247,32 @@ namespace WeatherApi.Client
             var status_ = (int)response_.StatusCode;
             if (status_ == 200)
             {
-                var objectResponse_ = await ReadObjectResponseAsync<WeatherForecast>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                var objectResponse_ = await ReadObjectResponseAsync<WeatherDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                 if (objectResponse_.Object == null)
                 {
                     throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                 }
                 return objectResponse_.Object;
+            }
+            else
+            if (status_ == 400)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+            }
+            else
+            if (status_ == 404)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
             }
             else
             {
@@ -170,7 +283,7 @@ namespace WeatherApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteWeatherForecastAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -206,49 +319,24 @@ namespace WeatherApi.Client
                 return;
             }
             else
+            if (status_ == 400)
             {
-                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
             }
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutWeatherForecastAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            if (id == null)
-                throw new System.ArgumentNullException("id");
-
-            var client_ = _httpClient;
-
-            using var request_ = new System.Net.Http.HttpRequestMessage();
-
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
-            request_.Method = new System.Net.Http.HttpMethod("PUT");
-
-            var urlBuilder_ = new System.Text.StringBuilder();
-            // Operation Path: "Weather/{id}"
-            urlBuilder_.Append("Weather/");
-            urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
-
-            var url_ = urlBuilder_.ToString();
-            request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-            using var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-
-            var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
-            foreach (var item_ in response_.Headers)
-                headers_[item_.Key] = item_.Value;
-            if (response_.Content != null && response_.Content.Headers != null)
+            else
+            if (status_ == 404)
             {
-                foreach (var item_ in response_.Content.Headers)
-                    headers_[item_.Key] = item_.Value;
-            }
-
-            var status_ = (int)response_.StatusCode;
-            if (status_ == 200)
-            {
-                return;
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
             }
             else
             {
@@ -259,17 +347,24 @@ namespace WeatherApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PostWeatherForecastAsync(int id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<WeatherDto> PostAsync(int id, WeatherDto dto, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
+
+            if (dto == null)
+                throw new System.ArgumentNullException("dto");
 
             var client_ = _httpClient;
 
             using var request_ = new System.Net.Http.HttpRequestMessage();
 
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(dto, _settings.Value);
+                var content_ = new System.Net.Http.ByteArrayContent(json_);
+                content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                request_.Content = content_;
             request_.Method = new System.Net.Http.HttpMethod("POST");
+            request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
             var urlBuilder_ = new System.Text.StringBuilder();
             // Operation Path: "Weather/{id}"
@@ -293,7 +388,32 @@ namespace WeatherApi.Client
             var status_ = (int)response_.StatusCode;
             if (status_ == 200)
             {
-                return;
+                var objectResponse_ = await ReadObjectResponseAsync<WeatherDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                return objectResponse_.Object;
+            }
+            else
+            if (status_ == 400)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+            }
+            else
+            if (status_ == 404)
+            {
+                var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                if (objectResponse_.Object == null)
+                {
+                    throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                }
+                throw new ApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
             }
             else
             {
@@ -618,6 +738,59 @@ namespace WeatherApi.Client
             var result = System.Convert.ToString(value, cultureInfo);
             return result == null ? "" : result;
         }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.1.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class WeatherDto
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("date")]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.Text.Json.Serialization.JsonConverter(typeof(DateFormatConverter))]
+        public System.DateTimeOffset Date { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("temperatureC")]
+        [System.ComponentModel.DataAnnotations.Range(-275, 9000)]
+        public int TemperatureC { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("summary")]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256, MinimumLength = 1)]
+        public string Summary { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("temperatureF")]
+        public int? TemperatureF { get; set; } = default!;
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.1.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class ProblemDetails
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("type")]
+        public string? Type { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("title")]
+        public string? Title { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("status")]
+        public int? Status { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("detail")]
+        public string? Detail { get; set; } = default!;
+
+        [System.Text.Json.Serialization.JsonPropertyName("instance")]
+        public string? Instance { get; set; } = default!;
+
+        private System.Collections.Generic.IDictionary<string, object>? _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.1.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))")]
