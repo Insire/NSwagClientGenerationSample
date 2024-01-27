@@ -1,4 +1,6 @@
-﻿﻿namespace WeatherApi.Features.Weather
+﻿using FluentResults;
+
+namespace WeatherApi.Features.Weather
 {
     public sealed class WeatherService
     {
@@ -16,7 +18,6 @@
 
         public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-
             cancellationToken.ThrowIfCancellationRequested();
 
             if ((_random.Next() % 2) == 0) // imagine a db deletion taking place here
@@ -55,13 +56,13 @@
             }
         }
 
-        public async Task<WeatherDto> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<WeatherDto>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if ((_random.Next() % 2) == 0) // imagine a db deletion taking place here
             {
-                throw new InvalidOperationException($"Weather with ID {id} does not exist.");
+               return Result.Fail($"Weather with ID {id} does not exist.");
             }
             else
             {
@@ -76,19 +77,19 @@
             }
         }
 
-        public async Task<WeatherDto> UpdateAsync(int id, WeatherDto dto, CancellationToken cancellationToken)
+        public async Task<Result<WeatherDto>> UpdateAsync(int id, WeatherDto dto, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if ((_random.Next() % 2) == 0) // imagine a db deletion taking place here
             {
-                throw new InvalidOperationException($"Weather with ID {id} does not exist.");
+                return Result.Fail($"Weather with ID {id} does not exist.");
             }
             else
             {
                 if ((_random.Next() % 2) == 0)
                 {
-                    throw new InvalidOperationException("Weather could not be updated");
+                    return Result.Fail("Weather could not be updated");
                 }
                 else
                 {
@@ -97,13 +98,13 @@
             }
         }
 
-        public async Task<WeatherDto> CreateAsync(WeatherDto dto, CancellationToken cancellationToken)
+        public async Task<Result<WeatherDto>> CreateAsync(WeatherDto dto, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             if ((_random.Next() % 2) == 0) // imagine a db deletion taking place here
             {
-                throw new InvalidOperationException("Weather could not be created");
+                return Result.Fail("Weather could not be created");
             }
             else
             {
