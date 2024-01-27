@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using Remora.Results;
 using System.Net;
 
 namespace WeatherApi.Features.Weather
@@ -22,46 +21,29 @@ namespace WeatherApi.Features.Weather
         [SwaggerResponse(HttpStatusCode.OK, typeof(IReadOnlyList<WeatherDto>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails))]
-        public async Task<IActionResult> GetAllAsync(CancellationToken token = default)
+        public async Task<ActionResult<IReadOnlyList<WeatherDto>>> GetAllAsync(CancellationToken token = default)
         {
             var result = await _weatherService.GetAllAsync(token);
 
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            switch (result.Error)
-            {
-                case ArgumentNullError error:
-                    return BadRequest(error.Message);
-
-                case GenericError error:
-                    return BadRequest(error.Message);
-
-                case InvalidOperationError error:
-                    return BadRequest(error.Message);
-            }
-
-            throw new NotImplementedException();
+            return result.ToActionResult();
         }
 
         [HttpGet("{id:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(WeatherDto))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails))]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] int id, CancellationToken token = default)
+        public async Task<ActionResult<WeatherDto>> GetByIdAsync([FromRoute] int id, CancellationToken token = default)
         {
             var result = await _weatherService.GetByIdAsync(id, token);
 
-            return Ok(result);
+            return result.ToActionResult();
         }
 
         [HttpDelete("{id:int}")]
         [SwaggerDefaultResponse]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails))]
-        public async Task<IActionResult> DeleteAsync([FromRoute] int id, CancellationToken token = default)
+        public async Task<ActionResult> DeleteAsync([FromRoute] int id, CancellationToken token = default)
         {
             await _weatherService.DeleteAsync(id, token);
 
@@ -78,11 +60,11 @@ namespace WeatherApi.Features.Weather
         [SwaggerResponse(HttpStatusCode.OK, typeof(WeatherDto))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails))]
-        public async Task<IActionResult> PutAsync([FromBody] WeatherDto dto, CancellationToken token = default)
+        public async Task<ActionResult<WeatherDto>> PutAsync([FromBody] WeatherDto dto, CancellationToken token = default)
         {
             var result = await _weatherService.CreateAsync(dto, token);
 
-            return Ok(result);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -96,11 +78,11 @@ namespace WeatherApi.Features.Weather
         [SwaggerResponse(HttpStatusCode.OK, typeof(WeatherDto))]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails))]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails))]
-        public async Task<IActionResult> PostAsync([FromRoute] int id, WeatherDto dto, CancellationToken token = default)
+        public async Task<ActionResult<WeatherDto>> PostAsync([FromRoute] int id, WeatherDto dto, CancellationToken token = default)
         {
             var result = await _weatherService.UpdateAsync(id, dto, token);
 
-            return Ok(result);
+            return result.ToActionResult();
         }
     }
 }
