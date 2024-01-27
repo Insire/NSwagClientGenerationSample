@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Remora.Results" Version="7.4.1" />
 		<!--nswag-->
 		<PackageReference Include="NSwag.AspNetCore" Version="14.0.1" />
 		<PackageReference Include="NSwag.CodeGeneration" Version="14.0.1" />

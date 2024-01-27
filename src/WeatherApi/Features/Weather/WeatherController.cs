@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using Remora.Results;
 using System.Net;
 
 namespace WeatherApi.Features.Weather
@@ -25,7 +26,24 @@ namespace WeatherApi.Features.Weather
         {
             var result = await _weatherService.GetAllAsync(token);
 
-            return Ok(result);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            switch (result.Error)
+            {
+                case ArgumentNullError error:
+                    return BadRequest(error.Message);
+
+                case GenericError error:
+                    return BadRequest(error.Message);
+
+                case InvalidOperationError error:
+                    return BadRequest(error.Message);
+            }
+
+            throw new NotImplementedException();
         }
 
         [HttpGet("{id:int}")]
